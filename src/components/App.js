@@ -1,31 +1,61 @@
 import React, {Component} from 'react'
-import ArticleList from './ArticleList'
-import ArticlesChart from './ArticlesChart'
+import PropTypes from 'prop-types'
+import {Route, Switch, NavLink, Redirect} from 'react-router-dom'
+import ArticlesPage from './routes/ArticlesPage'
+import CommentsPage from './routes/CommentsPage'
 import UserForm from './UserForm'
-import Select from 'react-select'
-import 'react-select/dist/react-select.css'
+import Filters from './Filters'
+import Counter from './Counter'
+import Menu, {MenuItem} from './Menu'
+import LangProvider from './common/LangProvider'
 
 class App extends Component {
-    state = {
-        selected: null
+    static childContextTypes = {
+        username: PropTypes.string
     }
 
-    handleSelect = selected => this.setState({ selected })
+    getChildContext() {
+        return {
+            username: this.state.user
+        }
+    }
+    state = {
+        user: '',
+        language: 'ru'
+    }
+
+    changeLanguage = language => ev => this.setState({language})
+
+    handleUserChange = user => this.setState({user})
 
     render() {
-        const {articles} = this.props
-        const options = articles.map(article => ({
-            label: article.title,
-            value: article.id
-        }))
         return (
-            <div>
-                <h1>App name</h1>
-                <UserForm />
-                <Select options = {options} value = {this.state.selected} onChange = {this.handleSelect} multi />
-                <ArticleList articles = {articles} defaultOpenId = {articles[0].id}/>
-                <ArticlesChart articles = {articles} />
-            </div>
+            <LangProvider language={this.state.language}>
+                <div>
+                    <h1>App name</h1>
+                    <ul>
+                        <li onClick={this.changeLanguage('en')}>English</li>
+                        <li onClick={this.changeLanguage('ru')}>Russian</li>
+                    </ul>
+                    <UserForm value={this.state.user} onChange={this.handleUserChange}/>
+                    <Menu>
+                        <MenuItem url="/counter">Counter</MenuItem>
+                        <MenuItem url="/articles">Articles</MenuItem>
+                        <MenuItem url="/filters">Filters</MenuItem>
+                        <MenuItem url="/comments/1">Comments</MenuItem>
+                    </Menu>
+                    <Switch>
+                        <Redirect from="/" exact to="/articles"/>
+                        <Route path="/counter" component={Counter} strict exact/>
+                        <Route path="/filters" component={Filters}/>
+                        <Route path="/articles/new" render={() => <h1>New Article</h1>}/>
+                        <Route path="/articles" component={ArticlesPage}/>
+                        <Route path="/comments" component={CommentsPage}/>
+                        <Route path="/error" component={() => <h1>Oooops!</h1>}/>
+                        <Route path="*" render={() => <h1>Not found</h1>}/>
+                    </Switch>
+                </div>
+            </LangProvider>
         )
     }
 }
