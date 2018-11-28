@@ -65,4 +65,5 @@ class Article extends PureComponent {
 }
 
 
+
 export default Article
