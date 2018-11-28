@@ -23,7 +23,7 @@ export default class ArticleList extends Accordion {
         const articleElements = this.props.articles.map(article => <li key = {article.id}>
             <Article article = {article}
                      isOpen = {this.state.openId === article.id}
-                     toggleOpen = {this.toggleAccordion}
+                     toggleOpen = {this.toggleAccordion(article)}
             />
         </li>)
         return (
