@@ -5,21 +5,15 @@ export default class Accordion extends Component {
         openId: null,
     };
 
-    // toggleAccordion = openId =>
-    //     openId === this.state.openId ?
-    //         this.setState({openId: null}) :
-    //         this.setState({openId});
-
     toggleAccordion = article => {
-        if (!memo.has(article)) {
-            memo.set(article, openId => openId === this.state.openId ?
+        if (!this.memo.has(article)) {
+            this.memo.set(article, openId => openId === this.state.openId ?
                 this.setState({openId: null}) :
                 this.setState({openId}));
         }
 
-        return memo.get(article);
+        return this.memo.get(article);
     }
 
+    memo = new Map();
 }
-
-const memo = new Map();
